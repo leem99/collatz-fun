@@ -132,11 +132,11 @@ def collatz_looping_with_lookup(
             break
 
         if (n % 2) == 0:
-            n /= 2
+            n //= 2
         else:
             n = 3 * n + 1
 
-        sequence.append(int(n))
+        sequence.append(n)
 
     seq_log[input_n] = sequence
 
