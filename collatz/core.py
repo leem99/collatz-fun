@@ -1,4 +1,4 @@
-from typing import List, Callable, Iterable, Dict
+from typing import List, Dict
 from copy import copy
 
 
@@ -66,31 +66,6 @@ def collatz_recursive(n: int, seq: list = None) -> (int, List[int]):
         return collatz_recursive(n, seq)
 
 
-def batch_runner(func: Callable, batch: Iterable):
-    """
-    Run the Collatz sequence for a batch of numbers
-
-    Parameters
-    ----------
-    func: Callable
-        the function we will use to generate the Collatz sequence
-    seq: Interable
-        A list of values for which we want to compute the Collatz sequence
-
-    Returns
-    -------
-    seq_list: List[List[int]]
-        A list containing the Collatz sequence for each
-
-    """
-
-    seq_list: List[List[int]] = []
-    for val in batch:
-        seq_list.append(func(val))
-
-    return seq_list
-
-
 # version where we take advantage of pre-computed history
 
 
@@ -139,36 +114,5 @@ def collatz_looping_with_lookup(
         sequence.append(n)
 
     seq_log[input_n] = sequence
-
-    return seq_log
-
-
-def batch_runner_with_lookup(
-    func: Callable, batch: Iterable, seq_log: Dict[int, List[int]] = None
-):
-    """
-    Run the Collatz sequence for a batch of numbers
-
-    Parameters
-    ----------
-    func: Callable
-        the function we will use to generate the Collatz sequence
-    seq: Interable
-        A list of values for which we want to compute the Collatz sequence
-    seq_log: Dict[int, List[int]]
-        A lookup of pre-commputed Collatz sequences
-
-    Returns
-    -------
-    seq_log:  Dict[int, List[int]]
-        A dictionary containing all of the computed Collatz sequences
-
-    """
-
-    if seq_log is None:
-        seq_log = {}
-
-    for val in batch:
-        seq_log = func(val, seq_log)
 
     return seq_log
