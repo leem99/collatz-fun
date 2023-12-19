@@ -3,7 +3,7 @@ from typing import Callable, Dict, Iterable, List
 import ray
 import pyarrow.parquet as pq
 import pyarrow as pa
-import multiprocessing as mp
+import multiprocessing
 
 
 def batch_runner(func: Callable, batch: Iterable):
@@ -139,6 +139,7 @@ def run_distributed_collatz(
     data_path: str,
     max_workers: int = None,
     clear_previous: bool = False,
+    local_mode: bool = False,
 ) -> None:
     # clear out previous results
     if clear_previous:
@@ -153,13 +154,14 @@ def run_distributed_collatz(
         "working_dir": working_dir,
         "excludes": ["**/tests/**", "bin"],
     }
-    ray.init(runtime_env=runtime_env)
+    ray.init(runtime_env=runtime_env, local_mode=local_mode)
 
     start_indicies = list(range(start_val, end_val, batch_size))
 
     # This is the amount of rows we distribute to each worker.
     if max_workers is None:
-        max_workers = mp.cpu_count() - 1
+        max_workers = multiprocessing.cpu_count() - 1
+        print(f"max_workers: {max_workers}")
 
     result_refs: list[ray.ObjectRef] = []
 
@@ -167,7 +169,7 @@ def run_distributed_collatz(
         batch_start = i
         batch_end = batch_start + batch_size
 
-        batch = list(range(batch_start, batch_end))
+        batch = range(batch_start, batch_end)
 
         read_path = data_path
         write_path = f"{data_path}/seq_log_{ix}.parquet"

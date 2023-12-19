@@ -1,18 +1,32 @@
+import os
 import time
 import mlflow
 from typing import Callable
+from collatz.runners import write_seq_log
 
 
-def timer_1_million(
+def timer(
     collatz_func: Callable,
     runner: Callable,
     verbose: bool = True,
     with_mlflow: bool = False,
+    batch_start: int = 1,
+    batch_end: int = 1_000_000,
+    write_path: str = None,
+    clear_previous: bool = False,
 ):
-    batch = range(1, 1_000_001)
+    batch = range(batch_start, batch_end + 1)
+
+    # clear out previous results
+    if clear_previous:
+        os.system(f"rm -rf {write_path}/*")
 
     start = time.time()
-    runner(collatz_func, batch)
+    seq_log = runner(collatz_func, batch)
+
+    if write_path is not None:
+        write_seq_log(seq_log, write_path)
+
     finish = time.time()
     total_seconds = finish - start
 
